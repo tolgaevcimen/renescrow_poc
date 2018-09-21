@@ -123,6 +123,74 @@
         var letters = "ABCDEFGHIJKLMNOPQRSTUWXYZ";
         var variables = [];
 
+        var renderNumberTypeQuestion = function (questionElement, question) {
+            var validationMessageElement = questionElement.find(".js-validation-message");
+
+            var validateInput = function (e) {
+                var input = $(this);
+                var allValid = true;
+                $.each(question.validations, function () {
+                    var validation = this;
+                    if (validation.type === "length") {
+                        // length check
+                        allValid = allValid && validateRule(input.val().length >= validation.limit, validation, validationMessageElement, e);
+                    } else if (validation.type === "allNumber") {
+                        // number check
+                        var pressedKey = e.keyCode || e.which;
+                        // if char is not a number
+                        console.log(pressedKey)
+                        allValid = allValid && (validateRule(pressedKey < 48 || pressedKey > 57, validation, validationMessageElement, e));
+                    }
+                });
+                if (allValid) {
+                    validationMessageElement.hide();
+                }
+            };
+            var validateRule = function (isNotValid, validationObj, validationMessageElement, e) {
+                if (isNotValid) { // if char is not a number
+                    validationMessageElement.html(validationObj.message);
+                    validationMessageElement.show();
+                    setTimeout(function () {
+                        validationMessageElement.fadeOut(1000);
+                    }, 1000);
+                    e.preventDefault();
+                }
+
+                return !isNotValid;
+            };
+            var removeErrorMessageIfBackspacePressed = function (e) {
+                var pressedKey = e.keyCode || e.which;
+                if (pressedKey == 8) { // backspace
+                    validationMessageElement.hide();
+                }
+            };
+            questionElement.find(".js-number-input").keypress(validateInput);
+            questionElement.find(".js-number-input").keydown(removeErrorMessageIfBackspacePressed);
+            variables[question.variableName] = "";
+        };
+
+        var renderListImageTypeQuestion = function (questionElement, question) {
+            $.each(question.choices, function (index) {
+                var option = this;
+                var optionElement = questionElement.find("li.js-list-image-option-sample").clone();
+                optionElement.removeClass("js-list-image-option-sample").removeAttr("style");
+
+                optionElement.find(".js-hidden-option-value").val(option.label);
+                var optionImage = optionElement.find(".js-list-image-option-image");
+                optionImage.attr("src", option.image);
+                optionImage.data("original", option.image);
+                optionImage.attr("alt", option.label);
+
+                optionElement.find(".js-list-image-option-letter").html(letters[index]);
+                optionElement.find(".js-list-image-option-caption").html(option.label);
+
+                optionElement.data("option", option);
+
+                questionElement.find("ul.columns").append(optionElement);
+            });
+            variables[question.variableName] = [];
+        };
+
         var renderQuestions = function () {
             var container = $("ul.questions");
             $.each(questions, function (index) {
@@ -133,74 +201,15 @@
                 questionElement.data("question", question);
 
                 if (question.type === "number") {
-                    var validationMessageElement = questionElement.find(".js-validation-message");
-
-                    var validateInput = function (e) {
-                        var input = $(this);
-                        var allValid = true;
-                        $.each(question.validations, function () {
-                            var validation = this;
-                            if (validation.type === "length") {
-                                // length check
-                                allValid = allValid && validateRule(input.val().length >= validation.limit, validation, validationMessageElement, e);
-                            } else if (validation.type === "allNumber") {
-                                // number check
-                                var pressedKey = e.keyCode || e.which;
-                                // if char is not a number
-                                console.log(pressedKey)
-                                allValid = allValid && (validateRule(pressedKey < 48 || pressedKey > 57, validation, validationMessageElement, e));
-                            }
-                        });
-                        if (allValid) {
-                            validationMessageElement.hide();
-                        }
-                    },
-                        validateRule = function (isNotValid, validationObj, validationMessageElement, e) {
-                            if (isNotValid) { // if char is not a number
-                                validationMessageElement.html(validationObj.message);
-                                validationMessageElement.show();
-                                setTimeout(function () {
-                                    validationMessageElement.fadeOut(1000);
-                                }, 1000);
-                                e.preventDefault();
-                            }
-
-                            return !isNotValid;
-                        }
-                    removeErrorMessageIfBackspacePressed = function (e) {
-                        var pressedKey = e.keyCode || e.which;
-                        if (pressedKey == 8) { // backspace
-                            validationMessageElement.hide();
-                        }
-                    };
-                    questionElement.find(".js-number-input").keypress(validateInput);
-                    questionElement.find(".js-number-input").keydown(removeErrorMessageIfBackspacePressed);
-                    variables[question.variableName] = "";
+                    renderNumberTypeQuestion(questionElement, question);
                 } else if (question.type === "list-image") {
-                    $.each(question.choices, function (index) {
-                        var option = this;
-                        var optionElement = questionElement.find("li.js-list-image-option-sample").clone();
-                        optionElement.removeClass("js-list-image-option-sample").removeAttr("style");
-
-                        optionElement.find(".js-hidden-option-value").val(option.label);
-                        var optionImage = optionElement.find(".js-list-image-option-image");
-                        optionImage.attr("src", option.image);
-                        optionImage.data("original", option.image);
-                        optionImage.attr("alt", option.label);
-
-                        optionElement.find(".js-list-image-option-letter").html(letters[index]);
-                        optionElement.find(".js-list-image-option-caption").html(option.label);
-
-                        optionElement.data("option", option);
-
-                        questionElement.find("ul.columns").append(optionElement);
-                    });
-                    variables[question.variableName] = [];
+                    renderListImageTypeQuestion(questionElement, question);
                 }
 
                 container.append(questionElement);
             });
         };
+
         var focusOnElementByScrolling = function () {
             var middleOfPage = screen.height / 2;
             var tolerance = 100;
@@ -215,10 +224,8 @@
                 var elem = questionElements[i];
                 var x = elem.getBoundingClientRect().top;
                 var y = elem.getBoundingClientRect().bottom;
-                console.log(i + ". first: x: " + x + ", y: " + y);
                 var x2 = x < a ? a : x,
                     y2 = y > b ? b : y;
-                console.log(i + ". then:  x: " + x2 + ", y: " + y2);
 
                 var coveredAreaRate = (y2 - x2) / (y - x);
                 console.log(i + ". coveredAreaRate: " + coveredAreaRate);
@@ -275,7 +282,6 @@
 
         var setVariableFromListImage = function () {
             var optionElement = $(this);
-            // if(!optionElement.hasClass("selected")) return;
 
             var questionElement = optionElement.parents("li.question1");
             var questionObj = questionElement.data("question");
@@ -334,7 +340,6 @@
                 }
             });
         }
-
 
     </script>
 </body>

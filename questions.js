@@ -12,7 +12,7 @@ var questions = [
     },
     {
         id: "",
-        text: "What operations are you doing today - hardhat number: {hardhatnumber}?",
+        text: "What operations are you doing {hardhatnumber} today - hardhat number: {hardhatnumber}?",
         type: "list-image",
         hasVariableInText: true,
         choices: [
