@@ -155,18 +155,18 @@
                             validationMessageElement.hide();
                         }
                     },
-                    validateRule = function (isNotValid, validationObj, validationMessageElement, e) {
-                        if (isNotValid) { // if char is not a number
-                            validationMessageElement.html(validationObj.message);
-                            validationMessageElement.show();
-                            setTimeout(function() {
-                                validationMessageElement.fadeOut(1000);
-                            }, 1000);
-                            e.preventDefault();
-                        }
+                        validateRule = function (isNotValid, validationObj, validationMessageElement, e) {
+                            if (isNotValid) { // if char is not a number
+                                validationMessageElement.html(validationObj.message);
+                                validationMessageElement.show();
+                                setTimeout(function () {
+                                    validationMessageElement.fadeOut(1000);
+                                }, 1000);
+                                e.preventDefault();
+                            }
 
-                        return !isNotValid;
-                    }
+                            return !isNotValid;
+                        }
                     removeErrorMessageIfBackspacePressed = function (e) {
                         var pressedKey = e.keyCode || e.which;
                         if (pressedKey == 8) { // backspace
@@ -200,141 +200,141 @@
 
                 container.append(questionElement);
             });
-        },
-            focusOnElementByScrolling = function () {
-                var middleOfPage = screen.height / 2;
-                var tolerance = 100;
-                var a = middleOfPage - tolerance,
-                    b = middleOfPage + tolerance;
+        };
+        var focusOnElementByScrolling = function () {
+            var middleOfPage = screen.height / 2;
+            var tolerance = 100;
+            var a = middleOfPage - tolerance,
+                b = middleOfPage + tolerance;
 
-                var questionElements = $("li.question1");
-                var currentFocusedElement = $("li.question1.focus");
-                var maxCoveredAreaRate = 0;
-                var maxCoveringElement = null;
-                for (i = 0; i < questionElements.length; i++) {
-                    var elem = questionElements[i];
-                    var x = elem.getBoundingClientRect().top;
-                    var y = elem.getBoundingClientRect().bottom;
-                    console.log(i + ". first: x: " + x + ", y: " + y);
-                    var x2 = x < a ? a : x,
-                        y2 = y > b ? b : y;
-                    console.log(i + ". then:  x: " + x2 + ", y: " + y2);
+            var questionElements = $("li.question1");
+            var currentFocusedElement = $("li.question1.focus");
+            var maxCoveredAreaRate = 0;
+            var maxCoveringElement = null;
+            for (i = 0; i < questionElements.length; i++) {
+                var elem = questionElements[i];
+                var x = elem.getBoundingClientRect().top;
+                var y = elem.getBoundingClientRect().bottom;
+                console.log(i + ". first: x: " + x + ", y: " + y);
+                var x2 = x < a ? a : x,
+                    y2 = y > b ? b : y;
+                console.log(i + ". then:  x: " + x2 + ", y: " + y2);
 
-                    var coveredAreaRate = (y2 - x2) / (y - x);
-                    console.log(i + ". coveredAreaRate: " + coveredAreaRate);
-                    if (coveredAreaRate > maxCoveredAreaRate) {
-                        maxCoveredAreaRate = coveredAreaRate;
-                        maxCoveringElement = elem;
-                    }
+                var coveredAreaRate = (y2 - x2) / (y - x);
+                console.log(i + ". coveredAreaRate: " + coveredAreaRate);
+                if (coveredAreaRate > maxCoveredAreaRate) {
+                    maxCoveredAreaRate = coveredAreaRate;
+                    maxCoveringElement = elem;
                 }
-                if (elem === currentFocusedElement || maxCoveredAreaRate == 0) {
-                    return;
-                }
-                $("li.question1").removeClass("focus");
-                $(maxCoveringElement).addClass("focus").trigger("classChange");
-            },
-            focusOnElementByClicking = function () {
-                $("li.focus").removeClass("focus");
+            }
+            if (elem === currentFocusedElement || maxCoveredAreaRate == 0) {
+                return;
+            }
+            $("li.question1").removeClass("focus");
+            $(maxCoveringElement).addClass("focus").trigger("classChange");
+        };
+        var focusOnElementByClicking = function () {
+            $("li.focus").removeClass("focus");
 
-                var container = $('html, .questions'),
-                    scrollTo = $(this);
+            var container = $('html, .questions'),
+                scrollTo = $(this);
 
-                window.removeEventListener('scroll', focusOnElementByScrolling);
-                container.animate({
-                    scrollTop: scrollTo.offset().top
-                }, 500).promise().then(function () {
-                    scrollTo.addClass("focus").trigger("classChange");
-                    setTimeout(function () {
-                        window.addEventListener('scroll', focusOnElementByScrolling);
-                    }, 600);
-                });
-            },
-            selectListImageOption = function (e) {
-                e.stopPropagation();
-                $(this).toggleClass("selected").trigger("classChange");
-            };
+            window.removeEventListener('scroll', focusOnElementByScrolling);
+            container.animate({
+                scrollTop: scrollTo.offset().top
+            }, 500).promise().then(function () {
+                scrollTo.addClass("focus").trigger("classChange");
+                setTimeout(function () {
+                    window.addEventListener('scroll', focusOnElementByScrolling);
+                }, 600);
+            });
+        };
+        var selectListImageOption = function (e) {
+            e.stopPropagation();
+            $(this).toggleClass("selected").trigger("classChange");
+        };
 
         window.addEventListener('scroll', focusOnElementByScrolling);
         window.addEventListener('resize', focusOnElementByScrolling);
 
         $(document).ready(renderQuestions);
-        
+
         $("ul.questions").on("click", "li.question1", focusOnElementByClicking);
         $("ul.questions").on("click", "li.question1.focus li.js-li-image-option", selectListImageOption);
 
-        var setVariableFromSimpleInput = function() {
+        var setVariableFromSimpleInput = function () {
             var input = $(this);
 
             var question = input.parents("li.question1").data("question");
-            if(question.answerIsVariable) {
+            if (question.answerIsVariable) {
                 variables[question.variableName] = input.val();
             }
         };
 
         $("ul.questions").on("blur", "input", setVariableFromSimpleInput);
 
-        var setVariableFromListImage = function() {
+        var setVariableFromListImage = function () {
             var optionElement = $(this);
             // if(!optionElement.hasClass("selected")) return;
 
             var questionElement = optionElement.parents("li.question1");
             var questionObj = questionElement.data("question");
-            if(!questionObj.answerIsVariable) return;
+            if (!questionObj.answerIsVariable) return;
 
             var optionObj = optionElement.data("option");
 
-            if(variables[questionObj.variableName] == undefined) {
+            if (variables[questionObj.variableName] == undefined) {
                 variables[questionObj.variableName] = [];
             }
-            
-            if(optionElement.hasClass("selected")) {
+
+            if (optionElement.hasClass("selected")) {
                 variables[questionObj.variableName].push(optionObj.value);
             } else {
                 var index = variables[questionObj.variableName].indexOf(optionObj.value);
-                if(index !== -1) variables[questionObj.variableName].splice(index, 1);
+                if (index !== -1) variables[questionObj.variableName].splice(index, 1);
             }
         };
 
         $("ul.questions").on("classChange", "li.js-li-image-option", setVariableFromListImage);
 
-        var modifyFocusedQuestion = function() {
+        var modifyFocusedQuestion = function () {
             var questionElement = $(this);
-            if(!questionElement.hasClass("focus")) return;
-            
+            if (!questionElement.hasClass("focus")) return;
+
             var questionObj = questionElement.data("question");
 
-            if(questionObj.hasVariableInText) {
+            if (questionObj.hasVariableInText) {
                 handlePlaceholder(questionElement);
             }
-            if(questionObj.filteredChocies) {
+            if (questionObj.filteredChocies) {
                 handleFilteringOptions(questionElement);
             }
         };
 
         $("ul.questions").on("classChange", "li.question1", modifyFocusedQuestion);
 
-        var handlePlaceholder = function(questionElement) {
+        var handlePlaceholder = function (questionElement) {
             var questionText = questionElement.data("question").text;
-            for(var key in variables) {
+            for (var key in variables) {
                 questionText = questionText.split("{" + key + "}").join(variables[key]);
             }
             questionElement.find(".js-question-text").html(questionText);
         }
-        
-        var handleFilteringOptions = function(questionElement) {
+
+        var handleFilteringOptions = function (questionElement) {
             var options = questionElement.find("li.js-li-image-option:not(.js-list-image-option-sample)");
-            $.each(options, function() {
+            $.each(options, function () {
                 var optionElement = $(this);
                 var optionObj = optionElement.data("option") || optionElement.attr("data-option");
                 var filterValue = variables[optionObj.filterVariable];
-                if(filterValue.includes(optionObj.filterValue)) {
+                if (filterValue.includes(optionObj.filterValue)) {
                     optionElement.show();
                 } else {
                     optionElement.hide();
                 }
             });
         }
-        
+
 
     </script>
 </body>
