@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <link id="font" href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&text=' rel='stylesheet' type='text/css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="background">
+        <div></div>
+    </div>
+    <div class="form">
+        <ul class="questions" style="margin-top: 487px; margin-bottom: 567px; top: 0px;">
+
+        </ul>
+    </div>
+    <div class="question-samples" style="display: none">
+        <ul>
+            <li class="number ready visible active question1">
+                <div class="wrapper">
+                    <div class="item js-question-number"></div>
+                    <!-- <div class="arrow">
+                        -
+                    </div> -->
+                    <div class="question">
+                        <span class="js-question-text"></span>
+                    </div>
+                    <div class="content">
+                        <div class="content-wrapper">
+                            <div class="attachment-wrapper">
+                                <div class="input">
+                                    <input class="js-number-input" type="text" max="99999" maxlength="18" autocomplete="off">
+                                    <span class="js-validation-message validation-message"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list-image multiple visible active question1">
+                <div class="wrapper">
+                    <div class="item js-question-number"></div>
+                    <!-- <div class="arrow">
+                        -
+                    </div> -->
+                    <div class="question">
+                        <span class="js-question-text"></span>
+                    </div>
+                    <div class="content">
+                        <div class="content-wrapper">
+                            <div class="multiple intermitent" style="opacity: 1;">Choose as many as you like</div>
+                            <ul class="columns">
+                                <li id="" class="Border container step1 js-li-image-option js-list-image-option-sample "
+                                    style="display: none;">
+                                    <input type="hidden" name="value" autocomplete="off" class="js-hidden-option-value">
+                                    <div class="tick-wrapper"></div>
+                                    <span class="tick"></span>
+                                    <div class="image-wrapper" style="width: 143px; height: 143px;">
+                                        <img class="js-list-image-option-image" style="margin-left: -71.5px; margin-top: -71.5px; max-width: 143px; max-height: 143px; display: inline;">
+                                    </div>
+                                    <div class="text">
+                                        <div class="label">
+                                            <div class="letter"><span class="js-list-image-option-letter"></span></div>
+                                            <div class="caption js-list-image-option-caption"></div>
+                                        </div>
+                                    </div>
+                                    <div class="aux ">
+                                        <div class="bg"></div>
+                                        <div class="bd"></div>
+                                    </div>
+                                </li>
+                                <!-- <li class="custom container step1" id="other">
+                                    <input type="hidden" name="value" value="!other" autocomplete="off">
+                                    <div class="tick-wrapper"></div>
+                                    <span class="tick"></span>
+
+                                    <div class="image-wrapper" style="width: 143px; height: 143px;"><img src="//dkl3g0z0k6qzr.cloudfront.net/quickyformapp/images/other.png"
+                                            data-original="//dkl3g0z0k6qzr.cloudfront.net/quickyformapp/images/other.png"
+                                            width="124" height="115" style="margin-left: -62px; margin-top: -57.5px; width: 124px; height: 115px; display: inline;">
+
+                                        <span class="val">Other</span>
+
+                                        <input class="other-field" type="text" maxlength="45" autocomplete="off">
+
+                                        <div class="button-wrapper ok-confirm">
+                                            <div class="button nav tick tick--button enabled"><span></span> </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="text">
+                                        <div class="label">
+                                            <div class="letter"><span>I</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="aux ">
+                                        <div class="bg"></div>
+                                        <div class="bd"></div>
+                                    </div>
+                                </li> -->
+                            </ul>
+                            <div class="clear"></div>
+                            <div class="clear"></div>
+                            <div class="message "><span></span>
+                                <div></div>
+                            </div>
+                            <div class="confirm container step1" style="visibility: hidden">
+                                <div class="button-wrapper confirm">
+                                    <div class="button nav enabled"><span>OK</span><span class="confirm"></span> </div>
+                                </div>
+                                <div class="text">press <strong>ENTER</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <script src="questions.js"></script>
+    <script>
+        var letters = "ABCDEFGHIJKLMNOPQRSTUWXYZ";
+        var variables = [];
+
+        var renderQuestions = function () {
+            var container = $("ul.questions");
+            $.each(questions, function (index) {
+                var question = this;
+                var questionElement = $(".question-samples li." + question.type).clone();
+                questionElement.find(".js-question-number").html(index + 1 + " -");
+                questionElement.find(".js-question-text").html(question.text);
+                questionElement.data("question", question);
+
+                if (question.type === "number") {
+                    var validationMessageElement = questionElement.find(".js-validation-message");
+
+                    var validateInput = function (e) {
+                        var input = $(this);
+                        var allValid = true;
+                        $.each(question.validations, function () {
+                            var validation = this;
+                            if (validation.type === "length") {
+                                // length check
+                                allValid = allValid && validateRule(input.val().length >= validation.limit, validation, validationMessageElement, e);
+                            } else if (validation.type === "allNumber") {
+                                // number check
+                                var pressedKey = e.keyCode || e.which;
+                                // if char is not a number
+                                console.log(pressedKey)
+                                allValid = allValid && (validateRule(pressedKey < 48 || pressedKey > 57, validation, validationMessageElement, e));
+                            }
+                        });
+                        if (allValid) {
+                            validationMessageElement.hide();
+                        }
+                    },
+                    validateRule = function (isNotValid, validationObj, validationMessageElement, e) {
+                        if (isNotValid) { // if char is not a number
+                            validationMessageElement.html(validationObj.message);
+                            validationMessageElement.show();
+                            setTimeout(function() {
+                                validationMessageElement.fadeOut(1000);
+                            }, 1000);
+                            e.preventDefault();
+                        }
+
+                        return !isNotValid;
+                    }
+                    removeErrorMessageIfBackspacePressed = function (e) {
+                        var pressedKey = e.keyCode || e.which;
+                        if (pressedKey == 8) { // backspace
+                            validationMessageElement.hide();
+                        }
+                    };
+                    questionElement.find(".js-number-input").keypress(validateInput);
+                    questionElement.find(".js-number-input").keydown(removeErrorMessageIfBackspacePressed);
+                    variables[question.variableName] = "";
+                } else if (question.type === "list-image") {
+                    $.each(question.choices, function (index) {
+                        var option = this;
+                        var optionElement = questionElement.find("li.js-list-image-option-sample").clone();
+                        optionElement.removeClass("js-list-image-option-sample").removeAttr("style");
+
+                        optionElement.find(".js-hidden-option-value").val(option.label);
+                        var optionImage = optionElement.find(".js-list-image-option-image");
+                        optionImage.attr("src", option.image);
+                        optionImage.data("original", option.image);
+                        optionImage.attr("alt", option.label);
+
+                        optionElement.find(".js-list-image-option-letter").html(letters[index]);
+                        optionElement.find(".js-list-image-option-caption").html(option.label);
+
+                        optionElement.data("option", option);
+
+                        questionElement.find("ul.columns").append(optionElement);
+                    });
+                    variables[question.variableName] = [];
+                }
+
+                container.append(questionElement);
+            });
+        },
+            focusOnElementByScrolling = function () {
+                var middleOfPage = screen.height / 2;
+                var tolerance = 100;
+                var a = middleOfPage - tolerance,
+                    b = middleOfPage + tolerance;
+
+                var questionElements = $("li.question1");
+                var currentFocusedElement = $("li.question1.focus");
+                var maxCoveredAreaRate = 0;
+                var maxCoveringElement = null;
+                for (i = 0; i < questionElements.length; i++) {
+                    var elem = questionElements[i];
+                    var x = elem.getBoundingClientRect().top;
+                    var y = elem.getBoundingClientRect().bottom;
+                    console.log(i + ". first: x: " + x + ", y: " + y);
+                    var x2 = x < a ? a : x,
+                        y2 = y > b ? b : y;
+                    console.log(i + ". then:  x: " + x2 + ", y: " + y2);
+
+                    var coveredAreaRate = (y2 - x2) / (y - x);
+                    console.log(i + ". coveredAreaRate: " + coveredAreaRate);
+                    if (coveredAreaRate > maxCoveredAreaRate) {
+                        maxCoveredAreaRate = coveredAreaRate;
+                        maxCoveringElement = elem;
+                    }
+                }
+                if (elem === currentFocusedElement || maxCoveredAreaRate == 0) {
+                    return;
+                }
+                $("li.question1").removeClass("focus");
+                $(maxCoveringElement).addClass("focus").trigger("classChange");
+            },
+            focusOnElementByClicking = function () {
+                $("li.focus").removeClass("focus");
+
+                var container = $('html, .questions'),
+                    scrollTo = $(this);
+
+                window.removeEventListener('scroll', focusOnElementByScrolling);
+                container.animate({
+                    scrollTop: scrollTo.offset().top
+                }, 500).promise().then(function () {
+                    scrollTo.addClass("focus").trigger("classChange");
+                    setTimeout(function () {
+                        window.addEventListener('scroll', focusOnElementByScrolling);
+                    }, 600);
+                });
+            },
+            selectListImageOption = function (e) {
+                e.stopPropagation();
+                $(this).toggleClass("selected").trigger("classChange");
+            };
+
+        window.addEventListener('scroll', focusOnElementByScrolling);
+        window.addEventListener('resize', focusOnElementByScrolling);
+
+        $(document).ready(renderQuestions);
+        
+        $("ul.questions").on("click", "li.question1", focusOnElementByClicking);
+        $("ul.questions").on("click", "li.question1.focus li.js-li-image-option", selectListImageOption);
+
+        var setVariableFromSimpleInput = function() {
+            var input = $(this);
+
+            var question = input.parents("li.question1").data("question");
+            if(question.answerIsVariable) {
+                variables[question.variableName] = input.val();
+            }
+        };
+
+        $("ul.questions").on("blur", "input", setVariableFromSimpleInput);
+
+        var setVariableFromListImage = function() {
+            var optionElement = $(this);
+            // if(!optionElement.hasClass("selected")) return;
+
+            var questionElement = optionElement.parents("li.question1");
+            var questionObj = questionElement.data("question");
+            if(!questionObj.answerIsVariable) return;
+
+            var optionObj = optionElement.data("option");
+
+            if(variables[questionObj.variableName] == undefined) {
+                variables[questionObj.variableName] = [];
+            }
+            
+            if(optionElement.hasClass("selected")) {
+                variables[questionObj.variableName].push(optionObj.value);
+            } else {
+                var index = variables[questionObj.variableName].indexOf(optionObj.value);
+                if(index !== -1) variables[questionObj.variableName].splice(index, 1);
+            }
+        };
+
+        $("ul.questions").on("classChange", "li.js-li-image-option", setVariableFromListImage);
+
+        var modifyFocusedQuestion = function() {
+            var questionElement = $(this);
+            if(!questionElement.hasClass("focus")) return;
+            
+            var questionObj = questionElement.data("question");
+
+            if(questionObj.hasVariableInText) {
+                handlePlaceholder(questionElement);
+            }
+            if(questionObj.filteredChocies) {
+                handleFilteringOptions(questionElement);
+            }
+        };
+
+        $("ul.questions").on("classChange", "li.question1", modifyFocusedQuestion);
+
+        var handlePlaceholder = function(questionElement) {
+            var questionText = questionElement.data("question").text;
+            for(var key in variables) {
+                questionText = questionText.split("{" + key + "}").join(variables[key]);
+            }
+            questionElement.find(".js-question-text").html(questionText);
+        }
+        
+        var handleFilteringOptions = function(questionElement) {
+            var options = questionElement.find("li.js-li-image-option:not(.js-list-image-option-sample)");
+            $.each(options, function() {
+                var optionElement = $(this);
+                var optionObj = optionElement.data("option") || optionElement.attr("data-option");
+                var filterValue = variables[optionObj.filterVariable];
+                if(filterValue.includes(optionObj.filterValue)) {
+                    optionElement.show();
+                } else {
+                    optionElement.hide();
+                }
+            });
+        }
+        
+
+    </script>
+</body>
+
+</html>
