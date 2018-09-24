@@ -123,6 +123,9 @@ body {
     border-left-style: dashed;
     border-color: #C3C6C7;
 }
+.list-image.multiple .content-wrapper ul.columns {
+    display: inline-block;
+}
 .list-image li {
     cursor: pointer;
     word-wrap: break-word;

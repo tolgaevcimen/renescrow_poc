@@ -138,7 +138,7 @@
                         // number check
                         var pressedKey = e.keyCode || e.which;
                         // if char is not a number
-                        console.log(pressedKey)
+                        // console.log(pressedKey);
                         allValid = allValid && (validateRule(pressedKey < 48 || pressedKey > 57, validation, validationMessageElement, e));
                     }
                 });
@@ -185,6 +185,9 @@
                 optionElement.find(".js-list-image-option-caption").html(option.label);
 
                 optionElement.data("option", option);
+                if(question.questionFilter === true) {
+                    optionElement.addClass("questionFilterValue");
+                }
 
                 questionElement.find("ul.columns").append(optionElement);
             });
@@ -199,7 +202,10 @@
                 questionElement.find(".js-question-number").html(index + 1 + " -");
                 questionElement.find(".js-question-text").html(question.text);
                 questionElement.data("question", question);
-
+                if(question.questionFiltered /*or previous question is invisible*/) {
+                    questionElement.css("display", "none");
+                }
+                
                 if (question.type === "number") {
                     renderNumberTypeQuestion(questionElement, question);
                 } else if (question.type === "list-image") {
@@ -228,7 +234,7 @@
                     y2 = y > b ? b : y;
 
                 var coveredAreaRate = (y2 - x2) / (y - x);
-                console.log(i + ". coveredAreaRate: " + coveredAreaRate);
+                // console.log(i + ". coveredAreaRate: " + coveredAreaRate);
                 if (coveredAreaRate > maxCoveredAreaRate) {
                     maxCoveredAreaRate = coveredAreaRate;
                     maxCoveringElement = elem;
@@ -313,7 +319,7 @@
                 handlePlaceholder(questionElement);
             }
             if (questionObj.filteredChocies) {
-                handleFilteringOptions(questionElement);
+                handleOptionFiltering(questionElement);
             }
         };
 
@@ -327,7 +333,7 @@
             questionElement.find(".js-question-text").html(questionText);
         }
 
-        var handleFilteringOptions = function (questionElement) {
+        var handleOptionFiltering = function (questionElement) {
             var options = questionElement.find("li.js-li-image-option:not(.js-list-image-option-sample)");
             $.each(options, function () {
                 var optionElement = $(this);
@@ -340,6 +346,30 @@
                 }
             });
         }
+
+        var handleQuestionFiltering = function () {     
+            var optionElement = $(this);
+            var optionObj = optionElement.data("option");
+
+            var filterQuestionElement = optionElement.parents(".question1");
+            var filterQuestionObj = filterQuestionElement.data("question");
+            
+            $.each($("ul.questions li.question1"), function() {
+                var questionElement = $(this);
+                var questionObj = questionElement.data("question");
+
+                if(!questionObj.questionFiltered) return;
+
+                var filterValue = variables[filterQuestionObj.variableName];
+                if(questionObj.questionFilterValues.every(val => filterValue.indexOf(val) > -1)) {
+                    questionElement.show();
+                } else {
+                    questionElement.hide();
+                }
+            });
+        }
+
+        $("ul.questions").on("classChange", "li.questionFilterValue", handleQuestionFiltering);
 
     </script>
 </body>

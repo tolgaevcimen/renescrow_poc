@@ -1,6 +1,6 @@
 var questions = [
     {
-        id: "",
+        id: "1",
         text: "What is your hardhat number?",
         type: "number",
         answerIsVariable: true,
@@ -11,7 +11,7 @@ var questions = [
         ]
     },
     {
-        id: "",
+        id: "2",
         text: "What operations are you doing {hardhatnumber} today - hardhat number: {hardhatnumber}?",
         type: "list-image",
         hasVariableInText: true,
@@ -59,7 +59,56 @@ var questions = [
         ]
     },
     {
-        id: "",
+        id: "3",
+        text: "ABC?",
+        type: "list-image",
+        questionFilter: true,
+        answerIsVariable: true,
+        variableName: "questionFilterX",
+        choices: [
+            {
+                id: "",
+                label: "A",
+                image: "https://images.typeform.com/images/9MRAC7aTCvc7/choice/default#.jpeg",
+                value: "a"
+            },
+            {
+                id: "",
+                label: "B",
+                image: "https://images.typeform.com/images/yGKzq48SQrh8/choice/default#.jpeg",
+                value: "b"
+            },
+            {
+                id: "",
+                label: "C",
+                image: "https://images.typeform.com/images/yGKzq48SQrh8/choice/default#.jpeg",
+                value: "c"
+            }
+        ]
+    },
+    {
+        id: "4",
+        text: "a selected?",
+        type: "number",
+        questionFiltered: "questionFilterX",
+        questionFilterValues: ["a"]
+    },
+    {
+        id: "5",
+        text: "b selected?",
+        type: "number",
+        questionFiltered: "questionFilterX",
+        questionFilterValues: ["b"]
+    },
+    {
+        id: "6",
+        text: "a and b selected together?",
+        type: "number",
+        questionFiltered: "questionFilterX",
+        questionFilterValues: ["a", "b"]
+    },
+    {
+        id: "7",
         text: "What operations are you doing today?",
         type: "list-image",
         answerIsVariable: true,
@@ -76,23 +125,11 @@ var questions = [
                 label: "Heavy Equipment",
                 image: "https://images.typeform.com/images/yGKzq48SQrh8/choice/default#.jpeg",
                 value: "machine"
-            },
-            {
-                id: "",
-                label: "Hazardous Materials & SDS",
-                image: "https://images.typeform.com/images/9MRAC7aTCvc7/choice/default#.jpeg",
-                value: "hazard"
-            },
-            {
-                id: "",
-                label: "Heavy Equipment",
-                image: "https://images.typeform.com/images/yGKzq48SQrh8/choice/default#.jpeg",
-                value: "machine"
             }
         ]
     },
     {
-        id: "",
+        id: "8",
         text: "Which of these?",
         type: "list-image",
         filteredChocies: true,
